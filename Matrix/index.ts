@@ -1,9 +1,12 @@
 class TwoDMatrix {
 
     NArray:number[][]
+    BiggestNumber:number
 
     constructor (y:number, x:number, initialValue?:number) {
         this.NArray = []
+        this.BiggestNumber = initialValue!== undefined ? initialValue : Number.MIN_VALUE;
+
         for (let size = 0; size < y; size++) {
             let row = this.createSingleArray(x);
             
@@ -16,30 +19,39 @@ class TwoDMatrix {
 
     createSingleArray = length => new Array(length)
     
-    showMatrix = () => console.log(this.NArray)
+    showMatrix = () => {
 
-    fillRowWithValues = (row:number, value:number) => {
-        if (this.NArray.length > -1 && row < this.NArray.length) {
-            this.NArray[row].fill(value);
-        }
-        else 
-            throw new Error("Value out of bounds")
+        let maxSize = this.getDigitCount(this.BiggestNumber)
 
+
+        this.NArray.forEach(row=>{
+            let line = ""
+            row.forEach(item=>{
+                let itemSize = this.getDigitCount(item);
+                let appendTo = this.repeatStringNTimes(' ', (maxSize-itemSize)+2); 
+                line+=`${item}${appendTo}`
+            })
+            console.log(line+'\n')
+        })
     }
 
-    fillColumnWithValues = (column:number, value:number) => {
-        if (this.NArray[0].length > -1 && column < this.NArray[0].length) {
-            this.NArray.forEach((row:number[]) => {
-                row[column] = value;
-            });
+    getDigitCount = (digit:number) => {
+        let stringVersion:string = digit.toString();
+        let size:number = stringVersion.length
+        return size
+    }
+
+    repeatStringNTimes = (text:string, multiplier:number) => {
+        if (multiplier <= 0) return "";
+        let output = "";
+        for (let k = 0; k < multiplier; k++) {
+            output += text;
         }
-        else 
-            throw new Error("Value out of bounds")
+        return output;
     }
 
     getValues = (cords:number[][]) => {
         let out = []
-        console.log(cords)
         cords.forEach((v)=>{
             let [j, i] = v
             out.push(this.getValue(j, i));
@@ -52,8 +64,10 @@ class TwoDMatrix {
         return this.NArray[j][i]
     }
 
-    setValue = (j:number, i:number, value:number) => 
+    setValue = (j:number, i:number, value:number) =>{ 
         this.isOkay(j, i) && (this.NArray[j][i] = value)
+        this.BiggestNumber = value > this.BiggestNumber ? value : this.BiggestNumber
+    }
     
 
     inRangeJ = (j:number) => j > -1 && j < this.NArray.length;

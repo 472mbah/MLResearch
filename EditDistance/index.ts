@@ -16,41 +16,46 @@ class EditDistance {
         this.firstChars = firstStr.split(''); 
         this.secondChars = secondStr.split(''); 
 
-        this.MatrixOfDistance = new TwoDMatrix(this.firstChars.length, this.secondChars.length, 0)
-    
+        this.MatrixOfDistance = new TwoDMatrix(this.firstChars.length, this.secondChars.length)
+        this.initialiseAscending()
+
     }
 
     computeEditDistance = () => {
 
         if (this.firstChars.length <= 1 && this.secondChars.length <= 1) return;
 
-        let i:number = 1;
+        // let i:number = 1;
         let j:number = 1;
 
-        this.MatrixOfDistance.showMatrix()
+        while (j < this.firstChars.length) {
 
-        while (j < this.firstChars.length && i < this.secondChars.length) {
-            
-            let above:number[] = [j-1, i]; 
-            let nextTo:number[] = [j, i-1]; 
-            let diagonalTop:number[] = [j-1, i-1];
+            for (let i = 1; i < this.secondChars.length; i++) {
 
-            let matrixValues:[number, number, number] = this.MatrixOfDistance.getValues([above, nextTo, diagonalTop]);
+                let above:number[] = [j-1, i]; 
+                let nextTo:number[] = [j, i-1]; 
+                let diagonalTop:number[] = [j-1, i-1];
+    
+                let matrixValues:[number, number, number] = this.MatrixOfDistance.getValues([above, nextTo, diagonalTop]);
+    
+                matrixValues[0]++;
+                matrixValues[1]++;
+                if (this.firstChars[j] !== this.secondChars[i]) 
+                    matrixValues[2]+=2;
+    
+                let minimumValue = this.findTheMinium(matrixValues)
+    
+                this.MatrixOfDistance.setValue(j, i, minimumValue)
 
-            matrixValues[0]++;
-            matrixValues[1]++;
-            if (this.firstChars[j] !== this.secondChars[i]) 
-                matrixValues[2]+=2;
-            
+            }
 
-            let minimumValue = this.findTheMinium(matrixValues)
 
-            this.MatrixOfDistance.setValue(j, i, minimumValue)
-
-            i++;
             j++;
 
         }
+
+        this.MatrixOfDistance.showMatrix()
+
 
     }
 
@@ -60,6 +65,27 @@ class EditDistance {
         values.forEach(numb=>numb < minimum ? (minimum=numb) : null )
         return minimum
     }
+
+    initialiseAscending = () => {
+
+        let maxIterations:number = this.firstChars.length > this.secondChars.length ? 
+                            this.firstChars.length : this.secondChars.length; 
+
+        let i:number = 0;
+        let j:number = 0;
+
+        while (i < maxIterations && j < maxIterations) {
+            
+            if (i < this.secondChars.length) 
+                this.MatrixOfDistance.setValue(0, i, i++);
+            
+            if (j < this.firstChars.length) 
+                this.MatrixOfDistance.setValue(j, 0, j++);
+
+        }
+        
+    }
+
 
 } 
 
