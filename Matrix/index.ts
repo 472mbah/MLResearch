@@ -1,14 +1,14 @@
 class TwoDMatrix {
 
     NArray:number[][]
-    BiggestNumber:number
+    LongestCharacterValue:number
 
     constructor (y:number, x:number, initialValue?:number) {
         this.NArray = []
-        this.BiggestNumber = initialValue!== undefined ? initialValue : Number.MIN_VALUE;
+        this.LongestCharacterValue = initialValue!== undefined ? this.getDigitCount(initialValue) : 0;
 
         for (let size = 0; size < y; size++) {
-            let row = this.createSingleArray(x);
+            let row:number[] = this.createSingleArray(x);
             
             if (initialValue!==undefined) 
                 row.fill(initialValue)
@@ -17,19 +17,17 @@ class TwoDMatrix {
         }
     }
 
-    createSingleArray = length => new Array(length)
+    createSingleArray = (length:number) => new Array(length)
     
     showMatrix = () => {
-
-        let maxSize = this.getDigitCount(this.BiggestNumber)
-
+        let maxSize = this.getDigitCount(this.LongestCharacterValue)
 
         this.NArray.forEach(row=>{
             let line = ""
             row.forEach(item=>{
                 let itemSize = this.getDigitCount(item);
                 let appendTo = this.repeatStringNTimes(' ', (maxSize-itemSize)+2); 
-                line+=`${item}${appendTo}`
+                line+= `${appendTo}${item}`
             })
             console.log(line+'\n')
         })
@@ -64,22 +62,24 @@ class TwoDMatrix {
         return this.NArray[j][i]
     }
 
-    setValue = (j:number, i:number, value:number) =>{ 
+    setValue = (j:number, i:number, value:any) =>{ 
         this.isOkay(j, i) && (this.NArray[j][i] = value)
-        this.BiggestNumber = value > this.BiggestNumber ? value : this.BiggestNumber
+        this.LongestCharacterValue = value > this.LongestCharacterValue ? value : this.LongestCharacterValue
     }
-    
 
     inRangeJ = (j:number) => j > -1 && j < this.NArray.length;
-    inRangeI = (i:number) => i > -1 && this.NArray.length > 0 && i < this.NArray[0].length;
-    
 
+    inRangeI = (i:number) => i > -1 && this.NArray.length > 0 && i < this.NArray[0].length;
 
     isOkay = (j:number, i:number) => {
         if (!this.inRangeI(i) || !this.inRangeJ(j)) throw new Error("Value out of bounds")
         return true;
     }
 
+    getHeight = () => this.NArray.length
+    getWidth = () => this.inRangeI(0) ? this.NArray[0].length : 0
+
+    getEdgeIndexes = () => [ this.getHeight()-1, this.getWidth()-1 ] 
 
 }
 
